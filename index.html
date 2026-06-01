@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>不会写代码，也能用好 GitHub：写给普通人的入门指南</title>
+  <meta name="description" content="零基础 GitHub 入门指南，面向非程序员，图文详解注册、下载、搜索、Releases 安装与常见命令。">
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --text: #1a1a2e;
+      --text-secondary: #4a5568;
+      --accent: #0969da;
+      --accent-hover: #0550ae;
+      --border: #e2e8f0;
+      --code-bg: #f6f8fa;
+      --quote-bg: #f0f7ff;
+      --quote-border: #0969da;
+      --shadow: 0 1px 3px rgba(0,0,0,.08);
+      --radius: 12px;
+      --toc-width: 232px;
+      --toc-bg: #ffffff;
+      --toc-active: #0969da;
+      --toc-hover-bg: #f0f7ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 17px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      width: 100%;
+      max-height: 420px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+    }
+    .hero img { width: 100%; height: auto; display: block; object-fit: cover; }
+
+    /* ── Page layout ── */
+    .page-wrapper {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.75rem;
+    }
+
+    /* ── Sidebar TOC ── */
+    .toc-sidebar {
+      width: var(--toc-width);
+      flex-shrink: 0;
+      position: sticky;
+      top: 1.5rem;
+      max-height: calc(100vh - 3rem);
+      overflow-y: auto;
+      background: var(--toc-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .toc-sidebar::-webkit-scrollbar { width: 4px; }
+    .toc-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .toc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .85rem 1rem .75rem;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: .88rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .toc-close {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .toc-close:hover { background: var(--border); }
+
+    .toc-list {
+      list-style: none;
+      padding: .5rem 0;
+      margin: 0;
+    }
+    .toc-list li { margin: 0; }
+
+    .toc-list a {
+      display: block;
+      padding: .35rem 1rem;
+      font-size: .84rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      line-height: 1.45;
+      border-left: 3px solid transparent;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .toc-list a:hover {
+      background: var(--toc-hover-bg);
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .toc-list a.active {
+      color: var(--toc-active);
+      border-left-color: var(--toc-active);
+      background: var(--toc-hover-bg);
+      font-weight: 600;
+    }
+    .toc-list .toc-h3 a {
+      padding-left: 1.75rem;
+      font-size: .81rem;
+    }
+
+    /* ── Content area ── */
+    .content-area {
+      flex: 1;
+      min-width: 0;
+    }
+    article {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2.5rem 2rem;
+    }
+
+    /* scroll offset for sticky nav - headings need room */
+    h1, h2, h3 { scroll-margin-top: 1.5rem; }
+
+    h1 {
+      font-size: 1.9rem;
+      line-height: 1.35;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: 1.45rem;
+      margin: 2.5rem 0 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+    h3 {
+      font-size: 1.15rem;
+      margin: 2rem 0 .75rem;
+      color: var(--text);
+    }
+    p { margin-bottom: 1rem; color: var(--text); }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+    ul, ol { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: .4rem; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+    blockquote.callout {
+      background: var(--quote-bg);
+      border-left: 4px solid var(--quote-border);
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      color: var(--text-secondary);
+      font-size: .95rem;
+    }
+    blockquote.callout p { margin: 0 0 .4rem; }
+    blockquote.callout p:last-child { margin: 0; }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0 1.25rem;
+      font-size: .9rem;
+      line-height: 1.6;
+    }
+    code {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: .88em;
+    }
+    p code, li code, td code {
+      background: var(--code-bg);
+      padding: .15em .4em;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .table-wrap { overflow-x: auto; margin: 1rem 0 1.25rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    th, td { border: 1px solid var(--border); padding: .6rem .85rem; text-align: left; }
+    th { background: var(--code-bg); font-weight: 600; }
+    tr:nth-child(even) td { background: #fafbfc; }
+
+    .figure { margin: 1.5rem 0 2rem; text-align: center; }
+    .figure img {
+      max-width: 100%; height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .figure figcaption {
+      margin-top: .65rem;
+      font-size: .85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-secondary);
+      font-size: .85rem;
+    }
+
+    /* ── Mobile FAB ── */
+    .toc-fab {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 200;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: .65rem 1.1rem;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(9,105,218,.35);
+      transition: background .15s, transform .15s;
+    }
+    .toc-fab:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+    /* ── Overlay backdrop ── */
+    .toc-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.35);
+      z-index: 299;
+    }
+    .toc-backdrop.visible { display: block; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1060px) {
+      .toc-sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: min(var(--toc-width), 80vw);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        max-height: 100vh;
+        z-index: 300;
+        transform: translateX(-110%);
+        transition: transform .25s ease;
+        border-left: none;
+      }
+      .toc-sidebar.open { transform: translateX(0); }
+      .toc-close { display: flex; align-items: center; justify-content: center; }
+      .toc-fab { display: flex; align-items: center; gap: .4rem; }
+      .page-wrapper { padding-top: 1.5rem; }
+    }
+    @media (max-width: 640px) {
+      article { padding: 1.5rem 1.25rem; }
+      body { font-size: 16px; }
+      h1 { font-size: 1.55rem; }
+      h2 { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <img src="image/banner.png" alt="给非程序员群体的 GitHub 小白教程">
+  </header>
+
+  <!-- Mobile overlay backdrop -->
+  <div class="toc-backdrop" id="tocBackdrop"></div>
+
+  <div class="page-wrapper">
+
+    <!-- Sidebar TOC -->
+    <nav class="toc-sidebar" id="tocSidebar" aria-label="文章目录">
+      <div class="toc-header">
+        <span>目录</span>
+        <button class="toc-close" id="tocClose" aria-label="关闭目录">✕</button>
+      </div>
+      <ul class="toc-list">
+        <li class="toc-h2"><a href="#一-github-到底是什么-用一个比喻说清楚">一、GitHub 是什么？</a></li>
+        <li class="toc-h2"><a href="#二-注册账号-5-分钟搞定">二、注册账号</a></li>
+        <li class="toc-h2"><a href="#三-你最常用到-github-的场景">三、常用场景</a></li>
+        <li class="toc-h3"><a href="#场景一-下载别人的项目或文件">场景一：下载项目或文件</a></li>
+        <li class="toc-h3"><a href="#场景二-搜索你感兴趣的项目">场景二：搜索项目</a></li>
+        <li class="toc-h3"><a href="#场景三-读懂一个项目页面">场景三：读懂项目页面</a></li>
+        <li class="toc-h3"><a href="#场景四-给自己创建一个仓库">场景四：创建仓库</a></li>
+        <li class="toc-h2"><a href="#四-markdown-不会代码也能用的排版语言">四、Markdown 入门</a></li>
+        <li class="toc-h2"><a href="#五-readme-里那些-看不懂的命令-是什么意思">五、看不懂的命令？</a></li>
+        <li class="toc-h3"><a href="#先理解一件事-有些软件需要-运行环境">运行环境是什么</a></li>
+        <li class="toc-h3"><a href="#vs-code-打开和编辑项目文件的标配工具">📝 VS Code</a></li>
+        <li class="toc-h3"><a href="#python-和-pip">🐍 Python &amp; pip</a></li>
+        <li class="toc-h3"><a href="#node-js-和-npm">🟢 Node.js &amp; npm</a></li>
+        <li class="toc-h3"><a href="#java-和相关工具">☕ Java</a></li>
+        <li class="toc-h3"><a href="#其他你可能遇到的">🦀 其他语言</a></li>
+        <li class="toc-h3"><a href="#docker-重点推荐">🐳 Docker</a></li>
+        <li class="toc-h3"><a href="#一张速查表-看到什么命令-需要装什么">速查表</a></li>
+        <li class="toc-h3"><a href="#关于-虚拟环境-为什么-readme-总让你先建一个">虚拟环境</a></li>
+        <li class="toc-h2"><a href="#八-几个常见误解-帮你扫清障碍">八、常见误解</a></li>
+        <li class="toc-h2"><a href="#九-从今天开始-你可以做的三件事">九、行动建议</a></li>
+        <li class="toc-h2"><a href="#总结">总结</a></li>
+        <li class="toc-h2"><a href="#延伸阅读">延伸阅读</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main content -->
+    <div class="content-area">
+    <article>
+<h1 id="不会写代码-也能用好-github-写给普通人的入门指南">不会写代码，也能用好 GitHub：写给普通人的入门指南</h1>
+
+<blockquote class="callout lead">
+<p>&quot;GitHub 不就是程序员用来存代码的地方吗？跟我有什么关系？&quot;</p>
+</blockquote>
+
+<p>我第一次听到 GitHub 这个名字，也是这么想的。</p>
+
+<p>但后来我发现，<strong>GitHub 早就不只是程序员的地盘了。</strong> 设计师在上面分享素材，作家在上面协作写作，研究者在上面发布数据集，甚至有人把自己的人生目标清单也放在上面管理。</p>
+
+<p>如果你曾经：</p>
+
+<ul><li>想下载一个免费的开源工具，却不知道从哪里找</li><li>想了解某个热门 AI 项目到底是什么</li><li>想参与一个你感兴趣的项目，却不知道怎么开口</li></ul>
+
+<p>那这篇文章就是写给你的。我会用<strong>不假设你有任何技术背景</strong>的方式，带你把 GitHub 从一个陌生词汇，变成你真正用得上的工具。</p>
+
+<hr>
+
+<h2 id="一-github-到底是什么-用一个比喻说清楚">一、GitHub 到底是什么？用一个比喻说清楚</h2>
+
+<p>想象这样一个场景：</p>
+
+<p>你和几个朋友合写一本书。你们不在同一个城市，每个人负责不同的章节。你们用 Word 写好，通过微信发给彼此，然后……</p>
+
+<ul><li>&quot;哎，我刚才改的那个版本你覆盖掉了！&quot;</li><li>&quot;等等，这是第几稿了？是 <code>书稿_最终版_真的最终_v3_改.docx</code> 吗？&quot;</li><li>&quot;我发的那个有问题，先别用，我再发一版！&quot;</li></ul>
+
+<p>这种噩梦，你一定不陌生。</p>
+
+<figure class="figure">
+  <img src="image/01.png" alt="Git 与 GitHub 如何解决多人协作的版本混乱问题" loading="lazy">
+  <figcaption>Git 与 GitHub 如何解决多人协作的版本混乱问题</figcaption>
+</figure>
+
+<p><strong>GitHub 解决的，就是这个问题。</strong></p>
+
+<p>它的核心是一套叫 <strong>Git</strong> 的&quot;版本控制系统&quot;——简单说，就是<strong>帮你记录文件每一次修改的历史</strong>，谁在什么时候改了什么，都清清楚楚。而 GitHub，就是在这套系统上搭建的一个<strong>在线平台</strong>，让全世界的人都能协作、分享、讨论。</p>
+
+<p>你可以把 GitHub 理解成：</p>
+
+<div class="table-wrap"><table>
+<tr><th>你熟悉的东西</th><th>GitHub 里对应的概念</th></tr>
+<tr><td>文件夹</td><td>仓库（Repository / Repo）</td></tr>
+<tr><td>保存文件</td><td>提交（Commit）</td></tr>
+<tr><td>另存为新版本</td><td>分支（Branch）</td></tr>
+<tr><td>把修改合并进来</td><td>合并（Merge）</td></tr>
+<tr><td>复制别人的文件夹</td><td>Fork</td></tr>
+<tr><td>在文档里留评论</td><td>Issue / Pull Request</td></tr>
+</table></div>
+
+<p>不需要死记这些词，对于非程序员仅使用软件而已，如果后面用到的时候慢慢查即可。</p>
+
+<hr>
+
+<h2 id="二-注册账号-5-分钟搞定">二、注册账号：5 分钟搞定</h2>
+<figure class="figure">
+  <img src="image/02.png" alt="GitHub 注册流程：点击 Sign up 并填写账号信息" loading="lazy">
+  <figcaption>GitHub 注册流程：点击 Sign up 并填写账号信息</figcaption>
+</figure>
+
+<p>打开 <a href="https://github.com" target="_blank" rel="noopener">github.com</a>，点右上角的 <strong>Sign up（注册）</strong>。</p>
+
+<p>填写：</p>
+<ol><li><strong>邮箱地址</strong>（用你常用的）</li><li><strong>密码</strong></li><li><strong>用户名</strong>（这是你在 GitHub 上的&quot;ID&quot;，会出现在你的个人主页链接里，比如 <code>github.com/你的用户名</code>，认真想一个）</li></ol>
+
+<p>然后验证邮箱，就完成了。<strong>完全免费。</strong></p>
+
+<blockquote class="callout">
+<p>💡 <strong>小提示</strong>：GitHub 的界面是英文的，但不要怕。大多数操作按钮都很直观，而且 Chrome 浏览器自带翻译功能，右键页面选&quot;翻译成中文&quot;就能将就用。</p>
+</blockquote>
+
+<hr>
+
+<h2 id="三-你最常用到-github-的场景">三、你最常用到 GitHub 的场景</h2>
+
+<h3 id="场景一-下载别人的项目或文件">场景一：下载别人的项目或文件</h3>
+
+<p>这是普通人最常用到 GitHub 的方式。比如你在网上看到一篇文章，说&quot;源码在 GitHub 上&quot;，你该怎么办？</p>
+
+<figure class="figure">
+  <img src="image/03.png" alt="仓库页面点击 Code 按钮，选择 Download ZIP 或复制克隆地址" loading="lazy">
+  <figcaption>仓库页面点击 Code 按钮，选择 Download ZIP 或复制克隆地址</figcaption>
+</figure>
+<p><strong>方法一：直接下载 ZIP 压缩包</strong></p>
+
+<p>进入一个项目页面（也叫&quot;仓库页面&quot;），找到绿色的 <strong><code>&lt; &gt; Code</code></strong> 按钮，点开，选 <strong><code>Download ZIP</code></strong>，就像下载普通文件一样，下载到本地解压就行。</p>
+
+<p>不需要安装任何东西，不需要懂命令行。</p>
+
+
+<p><strong>方法二：用 <code>git clone</code> 克隆整个仓库（推荐用于需要&quot;跑起来&quot;的项目）</strong></p>
+
+<p>如果你打算实际运行一个项目（而不只是看看代码），<code>git clone</code> 是比下载 ZIP 更好的方式。它会把整个仓库完整地&quot;复制&quot;到你的电脑上，包括完整的版本历史，而且后续如果项目更新了，你只需要一条命令就能同步最新内容，不用重新下载整个压缩包。</p>
+
+<figure class="figure">
+  <img src="image/04.png" alt="在 git-scm.com 下载并安装 Git" loading="lazy">
+  <figcaption>在 git-scm.com 下载并安装 Git</figcaption>
+</figure>
+<p><strong>第一步：安装 Git</strong></p>
+
+<p><code>git clone</code> 命令需要先安装 <strong>Git</strong>。</p>
+
+<ul><li><strong>Windows</strong>：去 <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com</a> 下载安装，一路默认选项即可</li><li><strong>Mac</strong>：打开终端，输入 <code>git --version</code>，如果没装过，系统会自动弹出安装提示，按提示装就行</li><li><strong>验证是否安装成功</strong>：终端里输入 <code>git --version</code>，输出版本号即代表成功</li></ul>
+
+<p><strong>第二步：找到仓库的克隆地址</strong></p>
+
+<p>进入 GitHub 仓库页面，点绿色的 <strong><code>&lt; &gt; Code</code></strong> 按钮，切换到 <strong>HTTPS</strong> 标签，复制那个以 <code>https://github.com/</code> 开头的链接。</p>
+
+<p><strong>第三步：在终端里执行克隆命令</strong></p>
+
+<p>打开终端，先用 <code>cd</code> 命令切换到你想存放项目的文件夹，再执行：</p>
+
+<pre><code class="language-bash">git clone 刚才复制的链接</code></pre>
+
+<p>举个例子：</p>
+
+<pre><code class="language-bash">cd Desktop
+git clone https://github.com/某用户/某项目.git</code></pre>
+
+<p>回车之后，Git 会开始下载，你会看到进度信息。下载完成后，桌面上就多了一个以项目名命名的文件夹，里面就是完整的项目。</p>
+
+<p><strong>后续如果项目更新，只需要进入项目文件夹，执行：</strong></p>
+
+<pre><code class="language-bash">cd 项目文件夹名
+git pull</code></pre>
+
+<p>它会自动把最新的改动同步下来，比重新下载 ZIP 方便多了。</p>
+
+<blockquote class="callout">
+<p>💡 <strong>ZIP 下载 vs git clone，该用哪个？</strong></p>
+<p>如果你只是想<strong>看看代码或者拿几个文件</strong>，ZIP 更简单直接。如果你打算<strong>实际运行这个项目、或者长期跟进更新</strong>，<code>git clone</code> 是更好的选择——尤其是后面要执行 <code>npm install</code> 或 <code>pip install</code> 这类命令的情况，都是默认你已经 clone 下来了。</p>
+</blockquote>
+
+<hr>
+
+<h3 id="场景二-搜索你感兴趣的项目">场景二：搜索你感兴趣的项目</h3>
+<figure class="figure">
+  <img src="image/05.png" alt="GitHub 页面左上角的搜索框" loading="lazy">
+  <figcaption>GitHub 页面左上角的搜索框</figcaption>
+</figure>
+
+<p>GitHub 的搜索框在页面左上角，就像用百度或者 Google 一样直接搜关键词。</p>
+
+<figure class="figure">
+  <img src="image/06.png" alt="搜索 awesome python 时可按 Stars 排序、按语言筛选" loading="lazy">
+  <figcaption>搜索 awesome python 时可按 Stars 排序、按语言筛选</figcaption>
+</figure>
+<p>但有几个小技巧，能让搜索结果好很多：</p>
+
+<ul><li>搜 <strong><code>awesome + 关键词</code></strong>：这是 GitHub 上最值得养成的搜索习惯之一，下面单独说</li><li>按 <strong>Stars（⭐）排序</strong>：Stars 是别人给项目点的&quot;收藏&quot;，数量越多说明越受欢迎，可以作为参考</li><li>用 <strong>语言筛选</strong>：如果你知道自己想要 Python 或者 JavaScript 的项目，可以在左侧筛选</li></ul>
+
+<blockquote class="callout">
+<p>⭐ GitHub 上的 Star，就像微博的收藏或者抖音的点赞，是衡量一个项目受欢迎程度的重要指标。</p>
+</blockquote>
+
+<hr>
+
+<p><strong>📌 重点说说：awesome 系列是什么</strong></p>
+
+<p>如果你只学一个 GitHub 搜索技巧，那就学这个。</p>
+
+<p>&quot;awesome&quot;是 GitHub 上一种约定俗成的命名规范——当有人整理了某个领域内<strong>最值得关注的工具、资源、教程、项目</strong>的精选清单，通常就会把这个仓库命名为 <code>awesome-xxx</code>。</p>
+
+<p>这类清单的特点是：由社区共同维护，经过长期筛选，质量远比你随手搜到的文章靠谱。它不是某一个人的推荐，而是数千人共同投票验证过的结果。</p>
+
+<p>搜索方式很简单，直接在 GitHub 搜索框输入：</p>
+
+<pre><code class="language-text">awesome 你感兴趣的关键词</code></pre>
+
+<p>几个真实例子：</p>
+
+<div class="table-wrap"><table>
+<tr><th>搜索词</th><th>你能找到什么</th></tr>
+<tr><td><code>awesome python</code></td><td>Python 优质库、框架、工具的完整清单</td></tr>
+<tr><td><code>awesome selfhosted</code></td><td>可以自己部署的开源服务大全（网盘、笔记、书签……）</td></tr>
+<tr><td><code>awesome mac</code></td><td>Mac 上值得安装的优质软件清单</td></tr>
+<tr><td><code>awesome chatgpt prompts</code></td><td>经过验证的 ChatGPT 提示词合集</td></tr>
+<tr><td><code>awesome design tools</code></td><td>设计师工具资源汇总</td></tr>
+<tr><td><code>awesome obsidian</code></td><td>Obsidian 插件、主题、工作流推荐</td></tr>
+</table></div>
+
+<p>打开一个 awesome 仓库，你会看到一份按分类整理好的超长清单，每个条目都附有简短说明和链接。与其在互联网上东搜西找，不如直接来这里按图索骥——通常一个下午就能找到某个领域你需要的所有工具。</p>
+
+<blockquote class="callout">
+<p>💡 <strong>入门推荐</strong>：搜索 <code>awesome</code> 本身（不加任何关键词），置顶结果里有一个叫 <a href="https://github.com/sindresorhus/awesome" target="_blank" rel="noopener">sindresorhus/awesome</a> 的元清单，里面收录了各领域 awesome 仓库的总目录，是探索 GitHub 资源的绝佳起点。</p>
+</blockquote>
+
+<hr>
+
+<h3 id="场景三-读懂一个项目页面">场景三：读懂一个项目页面</h3>
+<figure class="figure">
+  <img src="image/07.png" alt="仓库页面：Stars、Forks、Issues 与 Releases 的位置" loading="lazy">
+  <figcaption>仓库页面：Stars、Forks、Issues 与 Releases 的位置</figcaption>
+</figure>
+
+<p>进入一个仓库，你会看到一堆文件，可能还有各种陌生的标签。别慌，先找这几个地方：</p>
+
+<p><strong>1. README 文件</strong></p>
+
+<p>几乎每个正经项目都有一个 <code>README.md</code> 文件，会自动显示在页面底部。这就是这个项目的&quot;说明书&quot;，写了这是什么、能干什么、怎么用。这是你首先应该读的地方。</p>
+
+<p><strong>2. Stars 和 Forks 数量</strong></p>
+
+<p>在仓库名称下方，你会看到 ⭐ Stars 和 🍴 Forks 的数量。Stars 越多越受欢迎；Forks 表示有多少人&quot;复制&quot;了这个项目去自己研究或改造。</p>
+
+<p><strong>3. Issues（问题/讨论区）</strong></p>
+
+<p>点上方的 <code>Issues</code> 标签，你能看到大家对这个项目提出的问题和反馈——有点像产品的用户讨论区。如果你用这个工具遇到了问题，也可以来这里搜搜看有没有人问过同样的问题。</p>
+
+<p><strong>4. Releases（发布版本）</strong></p>
+
+<p>这是普通用户最应该重点认识的区域，却也是最容易让人看懵的地方。</p>
+
+<p>如果说 README 是项目的&quot;说明书&quot;，那 <strong>Releases 就是项目的&quot;应用商店页面&quot;</strong>——开发者在这里发布可以直接用的程序版本，不需要你懂任何代码。</p>
+
+<p>点开 <code>Releases</code>，你会看到类似这样的信息：</p>
+
+<ul><li>版本号（比如 <code>v5.48.0</code>），标着 <strong>Latest</strong> 的就是当前最新稳定版</li><li>发布日期（比如 <code>on Mar 27</code>）</li><li>一段更新说明（changelog），写了这个版本修了什么、加了什么功能</li><li>下方的 <strong>Assets（资产/附件）</strong> 区域，列出了所有可以下载的文件</li></ul>
+
+<figure class="figure">
+  <img src="image/08.png" alt="Releases 页面的 Assets 下载区域" loading="lazy">
+  <figcaption>Releases 页面的 Assets 下载区域</figcaption>
+</figure>
+<p>Assets 里那一堆文件名，才是真正让人摸不着头脑的地方。我来逐一拆解：</p>
+
+<p><strong>🖥️ 按操作系统选文件</strong></p>
+
+<p>首先，根据你的操作系统，找对应的文件：</p>
+
+<div class="table-wrap"><table>
+<tr><th>文件名中包含</th><th>对应系统</th></tr>
+<tr><td><code>windows</code> 或 <code>win</code></td><td>Windows</td></tr>
+<tr><td><code>macos</code> 或 <code>darwin</code> 或 <code>mac</code></td><td>macOS（苹果电脑）</td></tr>
+<tr><td><code>linux</code></td><td>Linux</td></tr>
+</table></div>
+
+<p><strong>💻 还要区分芯片架构</strong></p>
+
+<p>现在光知道系统还不够，还得看芯片。尤其是 Mac 用户：</p>
+
+<div class="table-wrap"><table>
+<tr><th>文件名中包含</th><th>适用于</th></tr>
+<tr><td><code>x64</code> 或 <code>x86_64</code> 或 <code>amd64</code></td><td>Intel 芯片的电脑（旧款 Mac、大多数 Windows 电脑）</td></tr>
+<tr><td><code>arm64</code> 或 <code>aarch64</code> 或 <code>apple-silicon</code></td><td>ARM 芯片（苹果 M1/M2/M3 系列 Mac，部分新 Windows）</td></tr>
+<tr><td><code>x86</code> 或 <code>i686</code></td><td>32位系统（很老的电脑，现在很少见）</td></tr>
+</table></div>
+
+<blockquote class="callout">
+<p>💡 <strong>不知道自己 Mac 是什么芯片？</strong> 点左上角苹果图标 → "关于本机"，如果写的是 "Apple M1/M2/M3" 就选 <code>arm64</code>；如果写的是 "Intel" 就选 <code>x64</code>。</p>
+<p><strong>Windows 用户</strong> 大概率选 <code>x64</code> 就对了，除非你的电脑买于2022年之后且特别注明是 ARM。</p>
+</blockquote>
+
+<p><strong>📦 文件格式代表什么？</strong></p>
+
+<p>选对了系统和芯片，还有一关：文件格式。</p>
+
+<p><strong>桌面端：</strong></p>
+
+<div class="table-wrap"><table>
+<tr><th>扩展名</th><th>说明</th><th>适合谁</th></tr>
+<tr><td><code>.exe</code></td><td>Windows 安装程序，双击直接安装</td><td>Windows 用户首选</td></tr>
+<tr><td><code>.msi</code></td><td>Windows 安装包的另一种格式，同样双击安装</td><td>Windows 用户</td></tr>
+<tr><td><code>.zip</code> / <code>.7z</code></td><td>压缩包，解压后直接运行，不需要安装</td><td>想&quot;绿色版&quot;不写注册表的用户</td></tr>
+<tr><td><code>.dmg</code></td><td>macOS 专用安装镜像，双击打开拖到 Applications 文件夹</td><td>Mac 用户首选</td></tr>
+<tr><td><code>.pkg</code></td><td>macOS 安装包，双击运行安装向导</td><td>Mac 用户</td></tr>
+<tr><td><code>.AppImage</code></td><td>Linux 专用，单文件可执行，给权限直接运行</td><td>Linux 用户</td></tr>
+<tr><td><code>.deb</code></td><td>Linux（Debian/Ubuntu 系）的安装包</td><td>Ubuntu 用户</td></tr>
+<tr><td><code>.rpm</code></td><td>Linux（RedHat/Fedora 系）的安装包</td><td>Fedora 用户</td></tr>
+<tr><td><code>.tar.gz</code> / <code>.tar.xz</code></td><td>Linux/Mac 的压缩源码包，通常需要编译</td><td>开发者，普通用户一般不需要</td></tr>
+</table></div>
+
+<figure class="figure">
+  <img src="image/09.jpg" alt="Android 安装 APK 时需在设置中允许来自此来源的应用" loading="lazy">
+  <figcaption>Android 安装 APK 时需在设置中允许来自此来源的应用</figcaption>
+</figure>
+<p><strong>📱 移动端：</strong></p>
+
+<div class="table-wrap"><table>
+<tr><th>扩展名</th><th>说明</th><th>适合谁</th></tr>
+<tr><td><code>.apk</code></td><td>Android 安装包，相当于 Android 版的 <code>.exe</code></td><td>Android 用户</td></tr>
+<tr><td><code>.aab</code></td><td>Android App Bundle，是给开发者上传到 Google Play 用的格式，<strong>普通用户无法直接安装</strong>，跳过</td><td>开发者专用</td></tr>
+<tr><td><code>.ipa</code></td><td>iOS 应用包，但<strong>直接下载没有用</strong>——苹果系统有严格限制，不能随意安装来路不明的 <code>.ipa</code>，正规渠道只能走 App Store</td><td>iOS 用户一般用不到</td></tr>
+</table></div>
+
+<blockquote class="callout">
+<p>⚠️ <strong>关于 Android APK 的安全提示</strong>：从 GitHub 下载 APK 安装时，手机会弹出&quot;未知来源应用&quot;的警告，需要你手动允许。这不代表文件有问题——很多知名开源应用（比如 F-Droid 上的 App）都是这样分发的。但前提是你要确认这是<strong>官方仓库</strong>发布的版本，不要从来路不明的链接下载 APK。</p>
+<p>文件名里同样会标注芯片架构：<code>arm64-v8a</code> 是现在绝大多数安卓手机用的架构，优先选这个；<code>armeabi-v7a</code> 是老款32位机型；<code>x86_64</code> 是极少数安卓模拟器或特殊设备。不确定就选 <code>arm64-v8a</code>，或者找有 <code>universal</code>（通用）字样的版本。</p>
+</blockquote>
+
+<p><strong>还有两个固定出现的文件，不用管：</strong></p>
+
+<ul><li><code>Source code (zip)</code> 和 <code>Source code (tar.gz)</code> — 这是项目的<strong>源代码压缩包</strong>，不是可运行的程序。普通用户完全不需要下载这两个。</li></ul>
+
+<hr>
+
+<p><strong>用一个真实项目来练手：pot-desktop</strong></p>
+
+<p>光看表格太抽象，我们来看一个真实项目的 Releases 页面。</p>
+
+<p><a href="https://github.com/pot-app/pot-desktop" target="_blank" rel="noopener"><strong>pot-desktop</strong></a> 是一款非常流行的开源划词翻译 + OCR 工具（⭐ 17k+ Stars），由中文开发者维护，支持 Windows、Mac、Linux 全平台，它的 Releases 页面几乎涵盖了你在 GitHub 上会见到的所有文件格式，是练手的绝佳例子。</p>
+
+<p>打开它的 <a href="https://github.com/pot-app/pot-desktop/releases" target="_blank" rel="noopener">Releases 页面</a>，展开最新版本的 Assets，你会看到密密麻麻将近 40 个文件，第一次看确实令人头皮发麻：</p>
+
+<figure class="figure">
+  <img src="image/10.png" alt="pot-desktop 项目的 Releases Assets 列表（39 个文件）" loading="lazy">
+  <figcaption>pot-desktop 项目的 Releases Assets 列表（39 个文件）</figcaption>
+</figure>
+
+<pre><code class="language-text">Assets (39)
+
+pot-3.0.7-1.aarch64.rpm               ← Linux / Fedora 系 / ARM64 芯片
+pot-3.0.7-1.armhfp.rpm                ← Linux / Fedora 系 / ARMv7（老款 ARM）
+pot-3.0.7-1.i386.rpm                  ← Linux / Fedora 系 / 32位 x86
+pot-3.0.7-1.x86_64.rpm               ← Linux / Fedora 系 / 64位（常见 PC）
+
+pot_3.0.7_aarch64.deb                 ← Linux / Ubuntu 系 / ARM64 芯片
+pot_3.0.7_aarch64_universal.deb       ← Linux / Ubuntu 系 / ARM64 / 兼容性更好的版本
+pot_3.0.7_amd64.deb                   ← Linux / Ubuntu 系 / 64位（常见 PC）
+pot_3.0.7_amd64_universal.deb         ← Linux / Ubuntu 系 / 64位 / 兼容性更好的版本
+pot_3.0.7_armhf.deb                   ← Linux / Ubuntu 系 / ARMv7
+pot_3.0.7_armhf_universal.deb         ← Linux / Ubuntu 系 / ARMv7 / 兼容性更好的版本
+pot_3.0.7_i386.deb                    ← Linux / Ubuntu 系 / 32位
+pot_3.0.7_i386_universal.deb          ← Linux / Ubuntu 系 / 32位 / 兼容性更好的版本
+
+pot_3.0.7_amd64.AppImage              ← Linux / AppImage 单文件 / 64位
+
+pot_3.0.7_aarch64.dmg                 ← macOS / M1/M2/M3（ARM）芯片
+pot_3.0.7_aarch64.app.tar.gz          ← macOS / M1/M2/M3 / 压缩包形式（同上，二选一）
+pot_3.0.7_aarch64.app.tar.gz.sig      ← 签名验证文件，不用下载
+pot_3.0.7_x64.dmg                     ← macOS / Intel 芯片
+pot_3.0.7_x64.app.tar.gz              ← macOS / Intel / 压缩包形式
+
+pot_3.0.7_x64-setup.exe               ← Windows / Intel/AMD 64位 / 安装版 ✅ 大多数人选这个
+pot_3.0.7_x64_fix_webview2_runtime-setup.exe  ← Windows / 64位 / 企业版系统专用（内置运行库）
+pot_3.0.7_arm64-setup.exe             ← Windows / ARM 芯片
+pot_3.0.7_arm64_fix_webview2_runtime-setup.exe ← Windows / ARM / 企业版专用
+pot_3.0.7_x86-setup.exe              ← Windows / 32位旧电脑
+
+pot.pbar                              ← pot 专用插件包，不是安装程序
+Pot.popclipextz                       ← macOS PopClip 插件，非主程序
+
+Source code (zip)                     ← 源代码，普通用户不需要
+Source code (tar.gz)                  ← 源代码，普通用户不需要</code></pre>
+
+<p>看起来很多，但用<strong>系统 + 芯片 + 格式</strong>三步过滤后，绝大多数文件都可以直接略过：</p>
+
+<p><strong>如果你是 Windows 用户（Intel/AMD 芯片，占大多数）：</strong></p>
+<p>→ 下载 <code>pot_3.0.7_x64-setup.exe</code>，双击安装，完事。</p>
+
+<p><strong>如果你是 Mac 用户（M1/M2/M3 芯片）：</strong></p>
+<p>→ 下载 <code>pot_3.0.7_aarch64.dmg</code>，打开拖入 Applications。</p>
+
+<p><strong>如果你是 Mac 用户（Intel 芯片）：</strong></p>
+<p>→ 下载 <code>pot_3.0.7_x64.dmg</code>，同上。</p>
+
+<p><strong>如果你是 Ubuntu 用户（普通 64位 PC）：</strong></p>
+<p>→ 下载 <code>pot_3.0.7_amd64.deb</code>，安装；如果装不上再换 <code>_universal</code> 版本。</p>
+
+<p>39 个文件，最终你只需要下载其中 <strong>1 个</strong>。其余的都是给其他系统、其他芯片、或者开发者准备的，完全不用管。</p>
+
+<blockquote class="callout">
+<p>💡 <strong>顺便一提</strong>：pot-desktop 本身非常好用，选词即翻译、截图 OCR，支持几十种翻译引擎，感兴趣可以顺手装一个试试。</p>
+</blockquote>
+
+<hr>
+
+<p><strong>🚨 下载完装不上？常见报错和解决方法</strong></p>
+
+<p>这是很多人卡住的地方——文件下载好了，双击却弹出一个让人摸不着头脑的报错。别慌，这几乎是每个人第一次装开源软件都会遇到的&quot;门槛&quot;，原因很固定，解法也很固定。</p>
+
+<p><strong>Mac 篇</strong></p>
+
+<figure class="figure">
+  <img src="image/11.png" alt="macOS 提示「Apple 无法验证该应用」的安全对话框" loading="lazy">
+  <figcaption>macOS 提示「Apple 无法验证该应用」的安全对话框</figcaption>
+</figure>
+<p><strong>问题一：&quot;无法打开，因为它来自身份不明的开发者&quot;</strong> 或 <strong>&quot;已损坏，无法打开&quot;</strong></p>
+
+<p>这是 macOS 的 Gatekeeper 安全机制在起作用。苹果要求开发者花钱进行&quot;公证&quot;认证，但很多开源项目的开发者不愿意或没有完成这个流程，所以系统会直接拦截。<strong>文件本身没有问题。</strong></p>
+
+<p>解决方法：</p>
+
+<ol>
+<li><strong>方法一（推荐）</strong>：打开「系统设置」→「隐私与安全性」，往下滚，你会看到一条提示说&quot;已阻止使用 XXX，因为来自身份不明的开发者&quot;，旁边有个<strong>「仍要打开」</strong>按钮，点它，再确认一次就行了。
+<figure class="figure">
+  <img src="image/12.png" alt="在「隐私与安全性」中点击「仍要打开」" loading="lazy">
+  <figcaption>在「隐私与安全性」中点击「仍要打开」</figcaption>
+</figure>
+</li>
+<li><strong>方法二</strong>：在 Finder 里找到这个 <code>.app</code> 文件，<strong>按住 <code>Control</code> 键再单击</strong>（或者右键），选「打开」，弹出的对话框里会多出一个「打开」按钮，点它即可。之后再双击就不会拦截了。</li>
+<li><strong>方法三（如果以上都没用）</strong>：打开「终端」（Terminal），输入以下命令，把路径换成你的 app 实际位置：
+<pre><code>xattr -cr /Applications/软件名.app</code></pre>
+回车执行，然后再尝试打开。</li>
+</ol>
+
+<blockquote class="callout">
+<p>⚠️ 以上方法只适用于你<strong>信任的来源</strong>（比如 GitHub 官方仓库的 Releases）。对于来路不明的软件，系统的拦截是在保护你，不要随意绕过。</p>
+</blockquote>
+
+<hr>
+
+<p><strong>问题二：<code>.dmg</code> 打开后拖进 Applications，软件却找不到或打不开</strong></p>
+
+<p>常见原因有两个：</p>
+
+<ul><li><strong>还没有真正&quot;安装&quot;完</strong>：<code>.dmg</code> 打开后，你需要把里面的 <code>.app</code> 图标<strong>拖动到旁边的 Applications 文件夹快捷方式上</strong>，才算安装完成。只是打开了 <code>.dmg</code> 镜像，不等于安装好了。</li><li><strong>直接从 <code>.dmg</code> 里运行了</strong>：有些人会直接双击 <code>.dmg</code> 里的 app 来用，这样可能会有权限问题。正确做法是拖进 Applications 后，从启动台或 Applications 文件夹里打开。</li></ul>
+
+<hr>
+
+<p><strong>问题三：M1/M2/M3 Mac 下载了 <code>x64</code> 版本，运行很卡或有奇怪问题</strong></p>
+
+<p>这是因为苹果芯片原生支持 <code>arm64</code>，运行 <code>x64</code> 程序需要通过 Rosetta 2 转译，虽然大多数时候没问题，但个别软件会有兼容性问题。解决方法就是回到 Releases 页面，重新下载带 <code>arm64</code> 或 <code>apple-silicon</code> 字样的版本。</p>
+
+<hr>
+
+<p><strong>Windows 篇</strong></p>
+
+<figure class="figure">
+  <img src="image/13.png" alt="Windows SmartScreen 警告，点击「更多信息」后选择「仍要运行」" loading="lazy">
+  <figcaption>Windows SmartScreen 警告，点击「更多信息」后选择「仍要运行」</figcaption>
+</figure>
+<p><strong>问题一：&quot;Windows 已保护你的电脑&quot;（SmartScreen 蓝色警告框）</strong></p>
+
+<p>这是 Windows Defender SmartScreen 的拦截提示，原因和 Mac 一样——软件没有经过微软的数字签名认证。同样，<strong>来自正规 GitHub 仓库的文件本身没有危险。</strong></p>
+
+<p>解决方法：点击蓝色警告框左下角的<strong>「更多信息」</strong>，然后会出现一个<strong>「仍要运行」</strong>按钮，点它就能继续安装。</p>
+
+<hr>
+
+<p><strong>问题二：安装时被杀毒软件（360、火绒、Windows Defender）直接删除或隔离</strong></p>
+
+<p>开源软件有时会触发杀毒软件的误报，尤其是一些系统工具类软件（因为它们需要调用底层权限，行为特征和某些病毒相似）。</p>
+
+<p>解决步骤：</p>
+
+<ol><li>先去杀毒软件的<strong>「隔离区」或「病毒库」</strong>，找到被删的文件，选择<strong>「恢复」</strong>或<strong>「信任」</strong></li><li>把这个软件的安装目录<strong>加入白名单/信任区</strong>，防止下次再被删</li><li>如果实在不放心，可以去 <a href="https://www.virustotal.com" target="_blank" rel="noopener">VirusTotal</a> 上传文件，它会用70多个杀毒引擎同时扫描，结果一目了然</li></ol>
+
+<hr>
+
+<p><strong>问题三：提示&quot;缺少 DLL 文件&quot;或&quot;无法启动此程序&quot;</strong></p>
+
+<p>这通常是电脑缺少某个<strong>运行库（Runtime）</strong>。常见的有：</p>
+
+<ul><li><strong>Visual C++ 运行库</strong>：去微软官网搜索 &quot;Visual C++ Redistributable&quot; 下载安装，选最新版本，<code>x64</code> 和 <code>x86</code> 都装上</li><li><strong>.NET Framework</strong> 或 <strong>.NET Runtime</strong>：同样去微软官网下载对应版本，报错信息里通常会写需要哪个版本</li></ul>
+
+<p>安装完运行库，再重新打开软件，十有八九就好了。</p>
+
+<hr>
+
+<p><strong>问题四：解压 <code>.zip</code> 后双击 <code>.exe</code>，一闪而过什么都没发生</strong></p>
+
+<p>可能原因：</p>
+
+<ul><li><strong>路径包含中文</strong>：把软件文件夹移动到一个<strong>全英文路径</strong>的地方（比如 <code>C:\Tools\软件名</code>），再运行</li><li><strong>需要以管理员身份运行</strong>：右键 <code>.exe</code> → <strong>「以管理员身份运行」</strong></li><li><strong>解压不完整</strong>：用 <a href="https://www.7-zip.org/" target="_blank" rel="noopener">7-Zip</a>（免费开源）重新解压，Windows 自带的解压偶尔会漏文件</li></ul>
+
+<hr>
+
+<h3 id="场景四-给自己创建一个仓库">场景四：给自己创建一个仓库</h3>
+<figure class="figure">
+  <img src="image/14.png" alt="点击右上角 + 号，选择 New repository" loading="lazy">
+  <figcaption>点击右上角 + 号，选择 New repository</figcaption>
+</figure>
+
+<p>即使你不写代码，GitHub 也可以用来：</p>
+
+<ul><li><strong>管理笔记</strong>（用 Markdown 格式写，后面会解释）</li><li><strong>备份重要文件</strong></li><li><strong>写个人博客</strong>（GitHub Pages 功能，免费！）</li><li><strong>整理你的学习资源清单</strong></li></ul>
+
+<p>创建仓库很简单：</p>
+
+<ol><li>登录后，点右上角 <strong><code>+</code></strong> 号 → <strong><code>New repository</code></strong></li><li>给仓库取个名字（比如 <code>my-notes</code> 或者 <code>reading-list</code>）</li><li>选择 <strong>Public（公开）</strong> 还是 <strong>Private（私密）</strong></li><li>勾选 <strong><code>Add a README file</code></strong>（这样仓库不是空的）</li><li>点 <strong><code>Create repository</code></strong></li></ol>
+
+<figure class="figure">
+  <img src="image/15.png" alt="创建仓库：填写名称、选择公开/私密、勾选 Add a README" loading="lazy">
+  <figcaption>创建仓库：填写名称、选择公开/私密、勾选 Add a README</figcaption>
+</figure>
+
+<p>完成！你有自己的第一个 GitHub 仓库了。</p>
+
+<hr>
+
+<h2 id="四-markdown-不会代码也能用的排版语言">四、Markdown：不会代码也能用的排版语言</h2>
+
+<p>GitHub 上大量的文字内容（README、Issue、笔记等）都用 <strong>Markdown</strong> 来写。</p>
+
+<p>听起来很技术，其实超简单——它就是一套用<strong>纯文字符号</strong>来排版的规则：</p>
+
+<pre><code class="language-markdown"># 这是一级标题
+## 这是二级标题
+
+**这是加粗文字**
+*这是斜体文字*
+
+- 这是无序列表项
+- 又一项
+
+1. 这是有序列表
+2. 第二条
+
+&gt; 这是引用块
+
+[这是超链接](https://github.com)</code></pre>
+
+<p>写完之后，GitHub 会自动把它渲染成好看的格式。你不需要安装 Word，不需要调字体大小，<strong>写什么符号，它就知道你要什么格式</strong>。</p>
+
+<p>花 10 分钟学一下 Markdown 的基本语法，你会发现它比 Word 好用多了——至少在写纯文字内容的时候。</p>
+
+<hr>
+
+<h2 id="五-readme-里那些-看不懂的命令-是什么意思">五、README 里那些&quot;看不懂的命令&quot;是什么意思？</h2>
+
+<p>你有没有遇到过这种情况：某个 GitHub 项目看起来很厉害，README 里也有说明，但往下一翻，全是这样的东西——</p>
+
+<pre><code class="language-text">npm install
+npm run start</code></pre>
+
+<p>或者：</p>
+
+<pre><code class="language-text">pip install -r requirements.txt
+python app.py</code></pre>
+
+<p>然后你就不知道该怎么办了。</p>
+
+<p>这一章就是专门来解释这些东西的。<strong>不要跳过它——这是绝大多数人卡在 GitHub 门口最真实的原因。</strong></p>
+
+<hr>
+
+<h3 id="先理解一件事-有些软件需要-运行环境">先理解一件事：有些软件需要&quot;运行环境&quot;</h3>
+
+<p>你平时用的软件（微信、浏览器、PS），安装完就能直接双击打开，因为它们是&quot;打包好的成品&quot;。</p>
+
+<p>但 GitHub 上很多项目发布的是<strong>源代码</strong>，不是打包好的程序。这就好比你拿到了一份食谱，而不是一道做好的菜——你还需要有厨房、有食材、有锅，才能把它做出来。</p>
+
+<p>这个&quot;厨房&quot;，就是所谓的<strong>运行环境（Runtime）</strong>。</p>
+
+<p>不同语言写的项目，需要不同的运行环境。下面我来逐一介绍你最常见到的几种。</p>
+
+<hr>
+
+<h3 id="vs-code-打开和编辑项目文件的标配工具">📝 VS Code：打开和编辑项目文件的标配工具</h3>
+
+<p>在正式介绍各种运行环境之前，有一个工具值得单独说——<strong>Visual Studio Code</strong>，简称 VS Code。</p>
+
+<p>它是微软出品的免费代码编辑器，也是目前全球使用人数最多的编辑器没有之一。但它不只是&quot;给程序员用的&quot;，对于从 GitHub 下载项目、查看和编辑配置文件的普通用户来说，它同样是最顺手的工具。</p>
+
+<p><strong>为什么推荐用 VS Code 打开 GitHub 项目？</strong></p>
+
+<ul><li>打开一个项目文件夹，左侧会展示完整的文件树，一目了然
+<figure class="figure">
+  <img src="image/16.png" alt="用 VS Code 打开项目文件夹，查看完整文件结构" loading="lazy">
+  <figcaption>用 VS Code 打开项目文件夹，查看完整文件结构</figcaption>
+</figure>
+</li><li>对 Markdown、JSON、YAML 等各种配置文件都有语法高亮，看起来清晰不费眼</li><li>内置终端，不需要单独开命令行窗口，直接在编辑器里输命令</li><li>有大量插件，包括中文界面包</li><li>完全免费，Windows / Mac / Linux 全支持</li></ul>
+
+<figure class="figure">
+  <img src="image/17.png" alt="在 code.visualstudio.com 下载 VS Code" loading="lazy">
+  <figcaption>在 code.visualstudio.com 下载 VS Code</figcaption>
+</figure>
+<p><strong>怎么安装？</strong></p>
+
+<p>去 <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a> 下载，选对应系统安装即可。</p>
+
+<figure class="figure">
+  <img src="image/18.png" alt="在 VS Code 插件市场搜索并安装中文语言包" loading="lazy">
+  <figcaption>在 VS Code 插件市场搜索并安装中文语言包</figcaption>
+</figure>
+<p>安装后，打开 VS Code，按 <code>Ctrl+Shift+X</code>（Mac 用 <code>Cmd+Shift+X</code>）打开插件市场，搜索 <strong>Chinese</strong> 安装中文语言包，重启后界面就变成中文了。</p>
+
+<p><strong>怎么用它打开一个 GitHub 项目？</strong></p>
+
+<p>把项目文件夹直接拖到 VS Code 图标上，或者在 VS Code 里选「文件」→「打开文件夹」，选中项目所在的文件夹即可。之后你会看到完整的项目结构，点击任意文件就能查看和编辑。</p>
+
+<figure class="figure">
+  <img src="image/19.png" alt="VS Code 菜单栏：终端 → 新建终端" loading="lazy">
+  <figcaption>VS Code 菜单栏：终端 → 新建终端</figcaption>
+</figure>
+
+<blockquote class="callout">
+<p>💡 <strong>内置终端怎么打开？</strong> 菜单栏选「终端」→「新建终端」，或者按 <code>Ctrl+`</code>（反引号）。打开后，终端的当前路径自动就在你的项目文件夹里，可以直接输入 <code>pip install</code> 或 <code>npm install</code> 这类命令，不需要手动 <code>cd</code>。</p>
+</blockquote>
+
+<hr>
+
+<h3 id="python-和-pip">🐍 Python 和 pip</h3>
+
+<figure class="figure">
+  <img src="image/20.png" alt="Python 简介：AI、数据分析、自动化脚本的主流语言" loading="lazy">
+  <figcaption>Python 简介：AI、数据分析、自动化脚本的主流语言</figcaption>
+</figure>
+<p><strong>Python 是什么？</strong></p>
+
+<p>Python 是目前最流行的编程语言之一，尤其在 AI、数据分析、自动化脚本领域几乎无处不在。你在 GitHub 上看到的大量 AI 工具、爬虫、效率脚本，十有八九是 Python 写的。</p>
+
+<p><strong>怎么安装 Python？</strong></p>
+
+<p>去 <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a> 下载最新版，安装时<strong>务必勾选 &quot;Add Python to PATH&quot;</strong>（Windows 用户尤其注意，不勾这个后面会很麻烦）。</p>
+
+<p>安装完后，打开终端（Windows 叫&quot;命令提示符&quot;或&quot;PowerShell&quot;，Mac 叫&quot;终端&quot;），输入：</p>
+
+<pre><code class="language-text">python --version</code></pre>
+
+<p>如果输出了版本号（比如 <code>Python 3.12.0</code>），说明安装成功。</p>
+
+<hr>
+
+<p><strong>pip 是什么？</strong></p>
+
+<p>pip 是 Python 的<strong>包管理器</strong>——你可以把它理解成 Python 世界里的&quot;应用商店&quot;，专门用来安装别人写好的 Python 库（功能模块）。</p>
+
+<p>它跟 Python 一起安装，不需要单独下载。</p>
+
+<p><strong>常见的 pip 命令：</strong></p>
+
+<pre><code class="language-bash"># 安装某个库
+pip install 库的名字
+
+# 按照项目的依赖清单批量安装（最常用！）
+pip install -r requirements.txt
+
+# 查看已安装的库
+pip list
+
+# 升级某个库
+pip install --upgrade 库的名字</code></pre>
+
+<p>你在 README 里看到 <code>pip install -r requirements.txt</code>，意思是：按照这个项目提供的 <code>requirements.txt</code> 文件，把所有需要的库都装上。这是运行一个 Python 项目的标准第一步。</p>
+
+<blockquote class="callout">
+<p>💡 <strong>Mac 用户注意</strong>：系统自带的 Python 版本很老，建议从官网重新安装新版。安装后命令可能是 <code>python3</code> 和 <code>pip3</code> 而不是 <code>python</code> 和 <code>pip</code>，两者功能一样。</p>
+</blockquote>
+
+<blockquote class="callout">
+<p>⚠️ <strong>常见报错</strong>：如果提示 <code>pip: command not found</code>，说明 Python 没有正确加入系统路径。Windows 用户重新运行安装程序，勾选&quot;Add to PATH&quot;；Mac 用户尝试用 <code>pip3</code> 替代 <code>pip</code>。</p>
+</blockquote>
+
+<hr>
+
+<h3 id="node-js-和-npm">🟢 Node.js 和 npm</h3>
+
+<figure class="figure">
+  <img src="image/21.png" alt="Node.js 简介：让 JavaScript 在电脑上运行的环境" loading="lazy">
+  <figcaption>Node.js 简介：让 JavaScript 在电脑上运行的环境</figcaption>
+</figure>
+<p><strong>Node.js 是什么？</strong></p>
+
+<p>Node.js 是让 JavaScript 能在电脑上（而不只是浏览器里）运行的环境。大量的前端工具、网页应用、桌面工具（比如 VS Code 本身）都是用 Node.js 生态构建的。</p>
+
+<p><strong>怎么安装 Node.js？</strong></p>
+
+<p>去 <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a> 下载，选带 <strong>LTS</strong>（长期支持版）标签的那个，更稳定。</p>
+
+<p>安装完后验证：</p>
+
+<pre><code class="language-text">node --version
+npm --version</code></pre>
+
+<p>两个都输出版本号就成功了。</p>
+
+<hr>
+
+<p><strong>npm 是什么？</strong></p>
+
+<p>npm（Node Package Manager）是 Node.js 的包管理器，地位相当于 Python 里的 pip。安装 Node.js 时会自动附带。</p>
+
+<p><strong>常见的 npm 命令：</strong></p>
+
+<pre><code class="language-bash"># 安装项目所有依赖（进入项目文件夹后运行，最常用！）
+npm install
+
+# 启动项目
+npm start
+# 或者
+npm run dev
+
+# 安装某个具体的包
+npm install 包的名字
+
+# 全局安装某个工具
+npm install -g 工具名</code></pre>
+
+<p>你在 README 里看到的 <code>npm install</code> + <code>npm run start</code>，标准流程就是：先装依赖，再启动程序。</p>
+
+<hr>
+
+<p><strong>yarn 是什么？</strong></p>
+
+<p>yarn 是 npm 的替代品，功能几乎相同，只是速度更快、命令略有不同。有些项目会推荐用 yarn 而不是 npm。</p>
+
+<pre><code class="language-bash"># 先全局安装 yarn
+npm install -g yarn
+
+# 然后用 yarn 安装依赖
+yarn install
+# 或简写
+yarn
+
+# 启动项目
+yarn start
+yarn dev</code></pre>
+
+<p>碰到 README 里写 <code>yarn</code> 命令的项目，照着用就行，和 npm 是同一个意思。</p>
+
+<hr>
+
+<h3 id="java-和相关工具">☕ Java 和相关工具</h3>
+
+<p><strong>Java 是什么？</strong></p>
+
+<p>Java 是一门历史悠久、企业级应用非常广泛的编程语言。你在 GitHub 上偶尔会遇到需要 Java 环境的工具，尤其是一些安卓开发工具、数据处理工具或者老牌开源软件。</p>
+
+<p><strong>怎么安装 Java？</strong></p>
+
+<p>搜索 <strong>JDK（Java Development Kit）</strong> 下载，推荐去 <a href="https://adoptium.net/" target="_blank" rel="noopener">Adoptium</a> 下载免费的 OpenJDK，选 LTS 版本。</p>
+
+<p>安装后验证：</p>
+
+<pre><code class="language-text">java -version</code></pre>
+
+<p><strong>Maven 和 Gradle 是什么？</strong></p>
+
+<p>它们是 Java 项目的构建工具，类似 Python 里的 pip。如果 README 里写了：</p>
+
+<pre><code class="language-text">mvn install
+mvn package</code></pre>
+
+<p>说明这个项目用的是 <strong>Maven</strong>（去 <a href="https://maven.apache.org/" target="_blank" rel="noopener">maven.apache.org</a> 下载）。</p>
+
+<p>如果写的是：</p>
+
+<pre><code class="language-text">./gradlew build
+gradle run</code></pre>
+
+<p>说明用的是 <strong>Gradle</strong>（通常项目自带，不需要单独安装）。</p>
+
+<p>对于普通用户来说，Java 生态相对复杂，如果一个工具有提供打包好的 <code>.jar</code> 文件或者 <code>.exe</code>，优先用那个，不要硬啃源码构建。</p>
+
+<hr>
+
+<h3 id="其他你可能遇到的">🦀 其他你可能遇到的</h3>
+
+<p><strong>Go（Golang）</strong></p>
+
+<p>Go 是 Google 开发的语言，以编译速度快著称。用 Go 写的工具通常会在 Releases 里直接提供编译好的单文件可执行程序，<strong>不需要安装 Go 本身</strong>就能用——找对应系统的二进制文件下载就行。</p>
+
+<p>如果真的需要从源码构建，去 <a href="https://go.dev/dl/" target="_blank" rel="noopener">go.dev</a> 下载 Go，然后：</p>
+
+<pre><code class="language-text">go build
+go run main.go</code></pre>
+
+<p><strong>Rust</strong></p>
+
+<p>Rust 是近年来非常受欢迎的系统级语言。同样地，Releases 里一般有编译好的程序，直接下载即可。需要从源码构建时，先安装 Rust 工具链：</p>
+
+<pre><code class="language-text">curl --proto &#x27;=https&#x27; --tlsv1.2 -sSf https://sh.rustup.rs | sh</code></pre>
+
+<p>然后：</p>
+
+<pre><code class="language-text">cargo build --release
+cargo run</code></pre>
+
+<h3 id="docker-重点推荐">🐳 Docker（重点推荐）</h3>
+
+<p>这是一个单独值得详细说说的东西，因为它对普通用户其实非常友好——尽管看起来很&quot;技术&quot;。</p>
+
+<figure class="figure">
+  <img src="image/23.png" alt="Docker 容器化技术：一次构建，到处运行" loading="lazy">
+  <figcaption>Docker 容器化技术：一次构建，到处运行</figcaption>
+</figure>
+<p><strong>Docker 是什么？用一个比喻说清楚</strong></p>
+
+<p>你去朋友家，想用他电脑打开你自己做的一个工具，结果发现他电脑没装 Python，版本还不对，折腾了半小时都跑不起来……</p>
+
+<p>Docker 解决的就是这个问题。</p>
+
+<p>它把一个软件连同它所有需要的运行环境（Python、Node.js、数据库……），全部打包进一个叫<strong>&quot;镜像（Image）&quot;</strong>的东西里，就像一个<strong>密封的集装箱</strong>——不管你的电脑是 Windows 还是 Mac，装了什么、没装什么，只要有 Docker，这个集装箱打开就能用，完全不受外部环境影响。</p>
+
+<p>你不需要自己配置任何依赖，一条命令搞定。</p>
+
+<hr>
+
+<figure class="figure">
+  <img src="image/22.png" alt="在 docker.com 下载 Docker Desktop" loading="lazy">
+  <figcaption>在 docker.com 下载 Docker Desktop</figcaption>
+</figure>
+<p><strong>安装 Docker Desktop</strong></p>
+
+<p>去 <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">docker.com/products/docker-desktop</a> 下载 <strong>Docker Desktop</strong>，有 Windows 和 Mac 版本，图形界面，安装完启动即可。</p>
+
+<p>安装后验证：打开终端，输入：</p>
+
+<pre><code class="language-bash">docker --version</code></pre>
+
+<p>输出版本号就说明成功了。</p>
+
+<blockquote class="callout">
+<p>⚠️ <strong>Windows 用户注意</strong>：Docker Desktop 在 Windows 上依赖 WSL 2（Windows Subsystem for Linux）。安装过程中如果提示需要开启或更新 WSL，按提示操作就行，安装程序会引导你完成。</p>
+</blockquote>
+
+<hr>
+
+<p><strong>Docker 的几个核心概念，先搞懂再用</strong></p>
+
+<div class="table-wrap"><table>
+<tr><th>概念</th><th>类比</th><th>说明</th></tr>
+<tr><td>镜像（Image）</td><td>菜谱 / 模板</td><td>软件的&quot;打包文件&quot;，只读，不会变</td></tr>
+<tr><td>容器（Container）</td><td>按菜谱做出来的菜</td><td>镜像运行起来的实例，可以启动、停止、删除</td></tr>
+<tr><td>Docker Hub</td><td>应用商店</td><td>存放公共镜像的仓库，大多数开源项目的镜像都发在这里</td></tr>
+<tr><td><code>docker-compose</code></td><td>一键启动多个容器</td><td>当一个项目需要多个服务（比如网页+数据库）时用到</td></tr>
+</table></div>
+
+<hr>
+
+<p><strong>常见的 Docker 命令详解</strong></p>
+
+<p>你在 README 里最常看到的几种写法：</p>
+
+<p><strong>① 直接运行一个镜像</strong></p>
+
+<pre><code class="language-bash">docker run -d -p 3000:3000 镜像名</code></pre>
+
+<p>拆解一下这条命令每个部分的意思：</p>
+
+<ul><li><code>docker run</code> — 拉取镜像（如果本地没有会自动下载）并启动一个容器</li><li><code>-d</code> — 后台运行（detached），不占用你的终端窗口</li><li><code>-p 3000:3000</code> — 端口映射，把容器内部的 3000 端口映射到你电脑的 3000 端口。运行后打开浏览器访问 <code>http://localhost:3000</code> 就能看到界面</li><li><code>镜像名</code> — 要运行的镜像，通常格式是 <code>用户名/项目名</code> 或者直接 <code>项目名</code></li></ul>
+
+<p><strong>② 带数据持久化的运行</strong></p>
+
+<pre><code class="language-bash">docker run -d -p 3000:3000 -v /本地路径:/容器路径 镜像名</code></pre>
+
+<p><code>-v</code> 是挂载本地文件夹到容器里。如果不加这个，容器删掉之后里面的数据也会消失；加上之后，数据保存在你本地，容器重建也不会丢。</p>
+
+<p><strong>③ 带环境变量的运行</strong></p>
+
+<pre><code class="language-bash">docker run -d -p 3000:3000 -e API_KEY=你的密钥 镜像名</code></pre>
+
+<p><code>-e</code> 是传入环境变量，很多项目需要你填入 API 密钥、数据库密码等配置。</p>
+
+<hr>
+
+<p><strong>docker-compose：一键启动整套服务</strong></p>
+
+<p>很多复杂项目不只有一个服务——比如一个 AI 工具可能同时需要启动&quot;网页界面&quot;+&quot;模型服务&quot;+&quot;数据库&quot;三个部分。这时候 README 里通常不会让你一条条敲 <code>docker run</code>，而是提供一个 <code>docker-compose.yml</code> 文件，然后让你执行：</p>
+
+<pre><code class="language-bash"># 启动所有服务（后台运行）
+docker compose up -d
+
+# 查看运行状态
+docker compose ps
+
+# 停止所有服务
+docker compose down
+
+# 停止并删除数据卷（彻底清空）
+docker compose down -v</code></pre>
+
+<p>这一条 <code>docker compose up -d</code>，可以替代你手动配置 Python 环境、安装数据库、启动多个进程……对普通用户来说，这是目前<strong>运行复杂开源项目最轻松的方式</strong>没有之一。</p>
+
+<hr>
+
+<p><strong>管理容器的常用命令</strong></p>
+
+<p>装好 Docker 跑起来项目之后，你还需要知道怎么管理它：</p>
+
+<pre><code class="language-bash"># 查看正在运行的容器
+docker ps
+
+# 查看所有容器（包括已停止的）
+docker ps -a
+
+# 停止一个容器
+docker stop 容器ID或容器名
+
+# 启动一个已停止的容器
+docker start 容器ID或容器名
+
+# 删除一个容器
+docker rm 容器ID或容器名
+
+# 查看容器的实时日志（排查问题时很有用）
+docker logs -f 容器ID或容器名
+
+# 查看本地已下载的镜像列表
+docker images
+
+# 删除某个镜像（先删容器才能删镜像）
+docker rmi 镜像名</code></pre>
+
+<blockquote class="callout">
+<p>💡 <strong>容器 ID 不需要全部输入</strong>，只要输入前几位能唯一区分就行，比如 <code>docker stop a3f</code> 通常就够了。</p>
+</blockquote>
+
+<hr>
+
+<p><strong>一个完整的实际流程</strong></p>
+
+<p>假设你在 GitHub 上找到一个带 Docker 支持的开源项目，README 的部署步骤一般长这样：</p>
+
+<pre><code class="language-bash"># 第一步：克隆项目
+git clone https://github.com/某用户/某项目.git
+cd 某项目
+
+# 第二步：复制配置文件模板，填入你的设置（比如 API 密钥）
+cp .env.example .env
+# 用文本编辑器打开 .env 文件，修改里面的配置
+
+# 第三步：一键启动
+docker compose up -d
+
+# 第四步：打开浏览器访问
+# http://localhost:3000  （端口号以 README 说明为准）</code></pre>
+
+<p>整个过程不需要你安装 Python、Node.js 或任何其他运行环境，Docker 全部帮你搞定了。</p>
+
+<hr>
+
+<p><strong>常见问题</strong></p>
+
+<p><strong>Q：端口被占用，提示 <code>address already in use</code></strong></p>
+
+<p>说明你电脑上已经有别的程序在用这个端口了。可以把映射端口改一下，比如把 <code>-p 3000:3000</code> 改成 <code>-p 3001:3000</code>，然后访问 <code>http://localhost:3001</code>。</p>
+
+<p><strong>Q：镜像下载太慢</strong></p>
+
+<p>Docker Hub 在国内访问有时候很慢。可以在 Docker Desktop 的设置里配置镜像加速地址（国内有阿里云、腾讯云等提供的加速服务，搜索&quot;Docker 镜像加速&quot;找最新可用地址）。</p>
+
+<p><strong>Q：<code>docker compose</code> 提示命令不存在</strong></p>
+
+<p>老版本的 Docker 用的是 <code>docker-compose</code>（中间有横线），新版本改成了 <code>docker compose</code>（空格）。两种都试一下，哪个有效用哪个。</p>
+
+<p><strong>Q：容器起来了但浏览器访问 localhost 没反应</strong></p>
+
+<p>先用 <code>docker ps</code> 确认容器确实在运行，再检查端口号对不对。有时候项目的实际端口和 README 示例不一样，看一下 <code>docker-compose.yml</code> 文件里 <code>ports:</code> 那行写的是什么。</p>
+
+<hr>
+
+<h3 id="一张速查表-看到什么命令-需要装什么">一张速查表：看到什么命令，需要装什么</h3>
+
+<div class="table-wrap"><table>
+<tr><th>README 里看到</th><th>需要先安装</th><th>去哪下载</th></tr>
+<tr><td><code>python</code>、<code>pip</code></td><td>Python</td><td>python.org</td></tr>
+<tr><td><code>node</code>、<code>npm</code></td><td>Node.js</td><td>nodejs.org</td></tr>
+<tr><td><code>yarn</code></td><td>Node.js + yarn</td><td>nodejs.org，然后 <code>npm i -g yarn</code></td></tr>
+<tr><td><code>java</code>、<code>mvn</code>、<code>gradle</code></td><td>JDK</td><td>adoptium.net</td></tr>
+<tr><td><code>go build</code>、<code>go run</code></td><td>Go</td><td>go.dev</td></tr>
+<tr><td><code>cargo build</code>、<code>cargo run</code></td><td>Rust</td><td>rustup.rs</td></tr>
+<tr><td><code>docker run</code></td><td>Docker Desktop</td><td>docker.com</td></tr>
+<tr><td><code>conda</code>、<code>mamba</code></td><td>Anaconda / Miniconda</td><td>anaconda.com</td></tr>
+</table></div>
+
+<blockquote class="callout">
+<p>💡 <strong>conda 补充说明</strong>：如果 README 里写的是 <code>conda create</code> 或 <code>conda install</code>，说明这个项目推荐用 <strong>Anaconda</strong>（面向数据科学的 Python 发行版，自带大量常用库）。对于 AI 和机器学习项目，用 conda 管理环境比纯 pip 更不容易出问题。去 <a href="https://www.anaconda.com/" target="_blank" rel="noopener">anaconda.com</a> 下载 Miniconda（轻量版）即可。</p>
+</blockquote>
+
+<hr>
+
+<h3 id="关于-虚拟环境-为什么-readme-总让你先建一个">关于&quot;虚拟环境&quot;——为什么 README 总让你先建一个</h3>
+
+<p>你可能还会在 README 里看到这样的步骤：</p>
+
+<pre><code class="language-bash">python -m venv venv
+source venv/bin/activate    # Mac/Linux
+venv\Scripts\activate       # Windows
+pip install -r requirements.txt</code></pre>
+
+<p>这是在创建一个 <strong>Python 虚拟环境（venv）</strong>。</p>
+
+<p>为什么要这么做？因为如果你同时在用多个 Python 项目，每个项目可能需要不同版本的同一个库，直接全装在系统里会互相冲突。虚拟环境就是给每个项目一个<strong>独立的&quot;小房间&quot;</strong>，库装在里面，互不干扰。</p>
+
+<p>这不是可选步骤，<strong>强烈建议照做</strong>。激活虚拟环境后，命令行前面会出现 <code>(venv)</code> 字样，说明你已经进入了这个项目专属的环境。</p>
+
+<hr>
+
+<h2 id="八-几个常见误解-帮你扫清障碍">八、几个常见误解，帮你扫清障碍</h2>
+
+<p><strong>❌ 误解一：&quot;GitHub 只能存代码&quot;</strong></p>
+
+<p>✅ 不对。GitHub 可以存任何文本文件，包括 Markdown 笔记、CSV 数据、配置文件、甚至小说草稿。当然，存图片、视频这类大文件就不太合适了（有大小限制）。</p>
+
+<p><strong>❌ 误解二：&quot;我不懂命令行，就没法用 GitHub&quot;</strong></p>
+
+<p>✅ 不对。GitHub 的网页版已经支持绝大多数基础操作：创建文件、上传文件、编辑文件、提交修改……全程点击，不需要敲一行命令。</p>
+
+<p>如果你以后想更高效地使用，可以下载 <strong>GitHub Desktop</strong>，这是 GitHub 官方出的图形界面客户端，依然不需要命令行。</p>
+
+<p><strong>❌ 误解三：&quot;公开的仓库，别人会来改我的文件&quot;</strong></p>
+
+<p>✅ 不对。Public（公开）只意味着别人可以<strong>看</strong>，不意味着他们可以随意修改。只有你明确邀请的协作者，才有权限直接提交修改。别人如果想贡献，需要通过&quot;Pull Request&quot;的方式提交，你来决定接不接受。</p>
+
+<p><strong>❌ 误解四：&quot;GitHub 是英文的，太难用了&quot;</strong></p>
+
+<p>✅ 界面确实是英文，但操作逻辑非常直观。而且现在 GitHub 已经有了一定程度的中文支持，加上浏览器翻译插件，基本不是障碍。</p>
+
+<hr>
+
+<h2 id="九-从今天开始-你可以做的三件事">九、从今天开始，你可以做的三件事</h2>
+
+<p>不要只是读完就关掉——行动才会让知识变成能力。</p>
+
+<p><strong>第一件事（5分钟）：</strong> 注册一个 GitHub 账号，取一个你喜欢的用户名。</p>
+
+<p><strong>第二件事（10分钟）：</strong> 找一个你感兴趣的领域，在 GitHub 搜索关键词，给一个你觉得有意思的项目点一个 ⭐ Star——这相当于&quot;收藏&quot;，以后可以在你的个人主页找回来。</p>
+
+<p><strong>第三件事（30分钟）：</strong> 创建一个属于自己的仓库，把你最近在看的书单、或者想学的技能清单，用 Markdown 格式写下来，提交进去。</p>
+
+<p>你不需要一开始就搞懂所有东西。GitHub 是一个你会随着使用越来越熟悉的工具——就像学骑自行车，真正上手才是开始。</p>
+
+<hr>
+
+<h2 id="总结">总结</h2>
+
+<p>GitHub 不是程序员的专属领地，它是一个<strong>任何人都可以参与的开放平台</strong>。</p>
+
+<ul><li>你可以在上面<strong>发现和下载</strong>海量免费资源</li><li>你可以用它<strong>管理自己的文件和笔记</strong></li><li>你可以用它<strong>免费搭建个人网站</strong></li><li>你可以用它<strong>了解和参与</strong>你感兴趣的开源项目</li></ul>
+
+<p>最重要的一点：<strong>GitHub 上绝大多数内容，都是人们自愿分享的。</strong> 每一个你 Star 的项目背后，都有人花了大量时间无偿贡献。当你有一天也把自己的东西放上去的时候，你也成为了这个生态的一部分。</p>
+
+<p>这感觉，挺好的。</p>
+
+<hr>
+
+<h2 id="延伸阅读">延伸阅读</h2>
+
+<ul><li><a href="https://docs.github.com/zh" target="_blank" rel="noopener">GitHub 官方文档（有中文）</a> — 最权威的参考资料</li><li><a href="https://www.markdownguide.org/cheat-sheet/" target="_blank" rel="noopener">Markdown 语法速查表</a> — 10分钟入门 Markdown</li><li><a href="https://desktop.github.com/" target="_blank" rel="noopener">GitHub Desktop 下载</a> — 图形界面客户端，无需命令行</li><li><a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages 官方指南</a> — 手把手教你建网站</li><li><a href="https://github.com/sindresorhus/awesome" target="_blank" rel="noopener">sindresorhus/awesome</a> — 各领域 awesome 清单的总目录，探索 GitHub 资源的起点</li><li>搜索关键词 <code>awesome</code> + 你感兴趣的任何话题，在 GitHub 里探索吧 🚀</li></ul>
+
+    </article>
+    </div><!-- /.content-area -->
+
+  </div><!-- /.page-wrapper -->
+
+  <footer>
+    <p>GitHub 小白教程 · 零基础 · 好理解 · 轻松入门</p>
+  </footer>
+
+  <!-- Mobile FAB -->
+  <button class="toc-fab" id="tocFab" aria-label="打开目录">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14v1.5H1V2zm0 4.5h10v1.5H1V6.5zm0 4.5h14v1.5H1V11z"/></svg>
+    目录
+  </button>
+
+  <script>
+    (function () {
+      const sidebar  = document.getElementById('tocSidebar');
+      const fab      = document.getElementById('tocFab');
+      const closeBtn = document.getElementById('tocClose');
+      const backdrop = document.getElementById('tocBackdrop');
+
+      function openToc() {
+        sidebar.classList.add('open');
+        backdrop.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeToc() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('visible');
+        document.body.style.overflow = '';
+      }
+
+      fab.addEventListener('click', openToc);
+      closeBtn.addEventListener('click', closeToc);
+      backdrop.addEventListener('click', closeToc);
+
+      // Close sidebar on nav link click (mobile)
+      sidebar.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          if (window.innerWidth <= 1060) closeToc();
+        });
+      });
+
+      // ── Active link highlighting via IntersectionObserver ──
+      var headings = Array.from(
+        document.querySelectorAll('article h2[id], article h3[id]')
+      );
+      var tocLinks = {};
+      sidebar.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        var id = a.getAttribute('href').slice(1);
+        tocLinks[id] = a;
+      });
+
+      var activeId = null;
+
+      function setActive(id) {
+        if (id === activeId) return;
+        if (activeId && tocLinks[activeId]) {
+          tocLinks[activeId].classList.remove('active');
+        }
+        activeId = id;
+        if (id && tocLinks[id]) {
+          var link = tocLinks[id];
+          link.classList.add('active');
+          // Scroll the TOC so active link is visible
+          var sidebarRect = sidebar.getBoundingClientRect();
+          var linkRect    = link.getBoundingClientRect();
+          if (linkRect.top < sidebarRect.top + 60) {
+            sidebar.scrollBy({ top: linkRect.top - sidebarRect.top - 80, behavior: 'smooth' });
+          } else if (linkRect.bottom > sidebarRect.bottom - 20) {
+            sidebar.scrollBy({ top: linkRect.bottom - sidebarRect.bottom + 40, behavior: 'smooth' });
+          }
+        }
+      }
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          // Build a map of currently intersecting headings
+          entries.forEach(function (entry) {
+            entry.target._visible = entry.isIntersecting;
+          });
+          // Find topmost visible heading
+          for (var i = 0; i < headings.length; i++) {
+            if (headings[i]._visible) {
+              setActive(headings[i].id);
+              return;
+            }
+          }
+          // Fallback: find the last heading above the viewport top
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var best = null;
+          headings.forEach(function (h) {
+            var top = h.getBoundingClientRect().top + scrollTop;
+            if (top <= scrollTop + 120) best = h;
+          });
+          if (best) setActive(best.id);
+        },
+        { rootMargin: '0px 0px -60% 0px', threshold: 0 }
+      );
+
+      headings.forEach(function (h) { observer.observe(h); });
+    })();
+  </script>
+</body>
+</html>
